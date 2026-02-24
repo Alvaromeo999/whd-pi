@@ -3,72 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WHD-Pi</title>
+    <title>WHD-Pi Mobile</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f0f0; margin: 0; padding: 20px; }
-        .card { background: white; border-radius: 20px; padding: 20px; max-width: 400px; margin: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .btn-link { display: block; background: #673ab7; color: white; padding: 15px; margin: 10px 0; border-radius: 30px; text-decoration: none; font-weight: bold; cursor: pointer; border: none; width: 100%; font-size: 16px; }
-        .item-link { background: #eee; color: #673ab7; padding: 20px; border-radius: 15px; text-decoration: none; font-weight: bold; font-size: 14px; display: block; border: 1px solid #ddd; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; background: #fdfdfd; margin: 0; padding: 20px; }
+        .card { background: white; border-radius: 20px; padding: 25px; max-width: 400px; margin: 20px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 1px solid #eee; }
+        .logo { width: 90px; margin-bottom: 10px; }
+        .btn-main { background: #673ab7; color: white; padding: 18px; margin: 15px 0; border-radius: 50px; border: none; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .btn-main:active { background: #512da8; transform: scale(0.98); }
+        .menu-box { display: none; margin-top: 20px; }
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .menu-card { background: #f8f9fa; color: #673ab7; padding: 20px 10px; border-radius: 15px; border: 1px solid #e0e0e0; font-weight: bold; font-size: 13px; cursor: pointer; }
         .full { grid-column: span 2; }
-        .hidden { display: none; }
+        .page-view { display: none; padding-top: 10px; }
+        .video-box { background: #222; height: 160px; border-radius: 12px; color: #fff; display: flex; align-items: center; justify-content: center; margin: 15px 0; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <img src="logo_whd.png" style="width:80px;">
-    <div id="section-home">
-        <h1 style="color:#673ab7;">WHD-Pi</h1>
-        <button class="btn-link" onclick="startLogin()">LOGIN SEKARANG</button>
+    <img src="logo_whd.png" alt="Logo" class="logo">
+    
+    <div id="view-home">
+        <h2 style="color:#673ab7; margin-bottom:5px;">WHD-Pi Ecosystem</h2>
+        <p style="color:#777; font-size:13px; margin-bottom:25px;">Whole Human Development</p>
+        <button type="button" class="btn-main" onclick="startAppLogin()">MASUK KE EKOSISTEM</button>
     </div>
 
-    <div id="section-menu" class="hidden">
-        <p id="user-name" style="font-weight:bold;"></p>
-        <div class="grid">
-            <div class="item-link" onclick="showPage('E-Learning')">📚 E-Learning</div>
-            <div class="item-link" onclick="showPage('Shop')">🛒 E-Commerce</div>
-            <div class="item-link full" onclick="showPage('Marketing')">📈 Community</div>
+    <div id="view-menu" class="menu-box">
+        <div style="background:#e8f5e9; color:#2e7d32; padding:8px; border-radius:10px; font-size:12px; margin-bottom:15px;">Koneksi Pi Terverifikasi</div>
+        <p id="txt-welcome" style="font-weight:bold; margin-bottom:20px;"></p>
+        
+        <div class="grid-menu">
+            <div class="menu-card" onclick="goToModul('E-Learning')">📚 E-Learning</div>
+            <div class="menu-card" onclick="goToModul('Shop')">🛒 E-Commerce</div>
+            <div class="menu-card full" onclick="goToModul('Marketing')">📈 Community & Marketing</div>
         </div>
     </div>
 
-    <div id="section-page" class="hidden">
-        <h2 id="page-title"></h2>
-        <div style="background:#000; color:#fff; height:150px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
-            Content Area
-        </div>
-        <button class="btn-link" style="background:#666;" onclick="goBack()">KEMBALI</button>
+    <div id="view-content" class="page-view">
+        <h3 id="content-title" style="color:#673ab7;"></h3>
+        <div class="video-box" id="media-area">Memuat Konten...</div>
+        <button type="button" class="btn-main" style="background:#888;" onclick="backToDashboard()">KEMBALI</button>
     </div>
 </div>
 
 <script>
-    // Inisialisasi SDK tanpa paksaan sandbox
-    window.Pi.init({ version: "2.0", sandbox: true });
+    // Pastikan Pi SDK siap
+    const Pi = window.Pi;
+    
+    // Inisialisasi SDK (Gunakan sandbox sesuai kebutuhan)
+    try {
+        Pi.init({ version: "2.0", sandbox: true });
+        console.log("WHD-Pi: SDK Ready");
+    } catch(e) {
+        console.error("SDK Init Error");
+    }
 
-    async function startLogin() {
+    // Fungsi Login Agresif
+    async function startAppLogin() {
+        console.log("Tombol diklik...");
         try {
-            console.log("Memulai Login...");
-            const scopes = ['username', 'payments'];
-            const auth = await window.Pi.authenticate(scopes, (p) => {});
+            // Memanggil Authenticate
+            const auth = await Pi.authenticate(['username', 'payments'], function(onPaymentFound) {
+                console.log("Payment Found:", onPaymentFound);
+            });
             
-            document.getElementById('user-name').innerText = "Halo, " + auth.user.username;
-            document.getElementById('section-home').classList.add('hidden');
-            document.getElementById('section-menu').classList.remove('hidden');
-        } catch (err) {
-            alert("Gunakan Pi Browser untuk Login!");
+            // Jika berhasil
+            document.getElementById('txt-welcome').innerText = "Selamat Datang, " + auth.user.username;
+            document.getElementById('view-home').style.display = 'none';
+            document.getElementById('view-menu').style.display = 'block';
+            
+        } catch (error) {
+            console.error(error);
+            alert("Harap buka aplikasi ini di dalam Pi Browser!");
         }
     }
 
-    function showPage(title) {
-        document.getElementById('page-title').innerText = title;
-        document.getElementById('section-menu').classList.add('hidden');
-        document.getElementById('section-page').classList.remove('hidden');
+    // Fungsi Navigasi
+    function goToModul(title) {
+        document.getElementById('content-title').innerText = title;
+        document.getElementById('view-menu').style.display = 'none';
+        document.getElementById('view-content').style.display = 'block';
+        
+        if(title === 'E-Learning') {
+            document.getElementById('media-area').innerHTML = "▶ Video Modul Karakter WHD";
+        } else {
+            document.getElementById('media-area').innerHTML = "Area Konten " + title;
+        }
     }
 
-    function goBack() {
-        document.getElementById('section-page').classList.add('hidden');
-        document.getElementById('section-menu').classList.remove('hidden');
+    function backToDashboard() {
+        document.getElementById('view-content').style.display = 'none';
+        document.getElementById('view-menu').style.display = 'block';
     }
 </script>
 
