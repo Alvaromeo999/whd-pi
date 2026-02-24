@@ -41,8 +41,11 @@
     </div>
 
     <script>
-        const Pi = window.Pi;
-        Pi.init({ version: "2.0", sandbox: true });
+       // Inisialisasi yang mendukung Testnet dan Mainnet
+window.Pi.init({ 
+    version: "2.0", 
+    sandbox: window.location.hostname.includes("github.io") ? false : true 
+});
 
         async function login() {
             try {
@@ -72,3 +75,4 @@
     </script>
 </body>
 </html>
+
