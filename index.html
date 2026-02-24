@@ -1,57 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>WHD-Pi Test</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WHD-Pi Platform</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        /* Gaya CSS Tetap Sama Seperti Sebelumnya */
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f8f9fa; }
+        .card { background: white; padding: 25px; border-radius: 15px; max-width: 400px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-purple { background: #673ab7; color: white; border: none; padding: 15px 25px; border-radius: 30px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
+        .menu-item { background: #eee; padding: 15px; margin: 10px 0; border-radius: 10px; cursor: pointer; color: #673ab7; font-weight: bold; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
-    <div id="status-sdk" style="color: red;">SDK Belum Siap...</div>
-    
-    <div id="auth-area">
-        <button id="btn-login" style="padding: 20px; width: 100%; font-size: 20px;">
-            TEKAN UNTUK LOGIN
-        </button>
-    </div>
+    <div class="card">
+        <img src="logo_whd.png" alt="Logo" style="width: 80px; margin-bottom: 10px;">
+        
+        <div id="auth-section">
+            <h1>WHD-Pi Ecosystem</h1>
+            <button class="btn-purple" onclick="login()">MASUK DENGAN PI</button>
+        </div>
 
-    <div id="menu-area" style="display: none;">
-        <h1>Selamat Datang!</h1>
-        <button onclick="alert('E-Learning')" style="padding: 15px;">📚 E-Learning</button>
-        <button onclick="alert('Shop')" style="padding: 15px;">🛒 Shop</button>
+        <div id="main-section" class="hidden">
+            <h2 id="user-name">Halo, Pioneer!</h2>
+            <div class="menu-item" onclick="showModul('E-Learning')">📚 E-Learning</div>
+            <div class="menu-item" onclick="showModul('Shop')">🛒 E-Commerce</div>
+            <div class="menu-item" onclick="showModul('Marketing')">📈 E-Marketing</div>
+        </div>
+
+        <div id="modul-section" class="hidden">
+            <h2 id="modul-title"></h2>
+            <div style="background:#000; height:150px; border-radius:10px; color:#fff; display:flex; align-items:center; justify-content:center;">
+                Konten Modul WHD Ready
+            </div>
+            <button class="btn-purple" style="background:#666; margin-top:20px;" onclick="backToMenu()">Kembali</button>
+        </div>
     </div>
 
     <script>
-        // 1. Tes apakah script terbaca
-        console.log("Script dimuat");
+        const Pi = window.Pi;
+        Pi.init({ version: "2.0", sandbox: true });
 
-        // 2. Inisialisasi SDK dengan penanganan error
-        try {
-            window.Pi.init({ version: "2.0", sandbox: true });
-            document.getElementById('status-sdk').innerText = "SDK SIAP (Sandbox)";
-            document.getElementById('status-sdk').style.color = "green";
-        } catch (e) {
-            document.getElementById('status-sdk').innerText = "SDK GAGAL: " + e.message;
+        async function login() {
+            try {
+                const scopes = ['username', 'payments'];
+                const auth = await Pi.authenticate(scopes, (payment) => {
+                    console.log("Incomplete payment found", payment);
+                });
+                
+                document.getElementById('user-name').innerText = "Halo, " + auth.user.username;
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('main-section').classList.remove('hidden');
+            } catch (err) {
+                alert("Gagal terhubung. Pastikan Anda berada di Pi Browser.");
+            }
         }
 
-        // 3. Pasang fungsi klik SECARA MANUAL setelah halaman dimuat
-        document.getElementById('btn-login').onclick = function() {
-            console.log("Tombol ditekan");
-            alert("Tombol Berhasil Merespon! Memulai Authenticate...");
-            
-            const scopes = ['username', 'payments'];
-            function onIncompletePaymentFound(payment) { console.log(payment); };
+        function showModul(title) {
+            document.getElementById('modul-title').innerText = title;
+            document.getElementById('main-section').classList.add('hidden');
+            document.getElementById('modul-section').classList.remove('hidden');
+        }
 
-            window.Pi.authenticate(scopes, onIncompletePaymentFound)
-                .then(function(auth) {
-                    alert("Login Berhasil: " + auth.user.username);
-                    document.getElementById('auth-area').style.display = 'none';
-                    document.getElementById('menu-area').style.display = 'block';
-                })
-                .catch(function(err) {
-                    alert("Error Pi: " + err.message);
-                });
-        };
+        function backToMenu() {
+            document.getElementById('modul-section').classList.add('hidden');
+            document.getElementById('main-section').classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
