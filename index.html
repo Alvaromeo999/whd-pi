@@ -56,7 +56,9 @@
     const userInfo = document.getElementById('user-info');
     const welcomeMsg = document.getElementById('welcome-msg');
     const mainMenu = document.getElementById('main-menu');
+    const container = document.querySelector('.container');
 
+    // Fungsi Login
     authBtn.addEventListener('click', async () => {
         try {
             const scopes = ['username', 'payments'];
@@ -70,21 +72,43 @@
         }
     });
 
-    // Navigasi Menu Sederhana
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            const menuName = e.target.innerText;
-            alert("Membuka " + menuName + "... (Halaman sedang disiapkan)");
-            // Nantinya di sini kita ganti dengan fungsi memanggil ELearning.js
-        });
-    });
+    // Navigasi Konten Dinamis
+    function showContent(type) {
+        let content = "";
+        if(type === 'learning') {
+            content = `<h2>📚 E-Learning Karakter</h2>
+                       <p>Membangun integritas melalui modul video.</p>
+                       <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls style="width:100%; border-radius:10px;"></video>
+                       <button onclick="location.reload()" style="margin-top:15px; background:#666;">Kembali</button>`;
+        } else if(type === 'shop') {
+            content = `<h2>🛒 WHD E-Commerce</h2>
+                       <div style="border:1px solid #ddd; padding:10px; border-radius:10px; margin-bottom:10px;">
+                           <p>Modul Karakter WHD - 1 Pi</p>
+                           <button onclick="alert('Memulai transaksi Pi...')">Beli Sekarang</button>
+                       </div>
+                       <button onclick="location.reload()" style="background:#666;">Kembali</button>`;
+        } else if(type === 'marketing') {
+            content = `<h2>📈 E-Marketing Community</h2>
+                       <p>Jaringan global Pioneer WHD.</p>
+                       <div style="text-align:left; background:#f0f0f0; padding:10px; border-radius:10px;">
+                           <li>Strategi Pasar Global</li>
+                           <li>Pengembangan Karakter Ekonomi</li>
+                       </div>
+                       <button onclick="location.reload()" style="margin-top:15px; background:#666;">Kembali</button>`;
+        }
+        container.innerHTML = content;
+    }
 
-    function onIncompletePaymentFound(payment) {
-        console.log("Incomplete payment:", payment);
-    };
+    // Pasang Event ke Menu
+    mainMenu.children[0].onclick = () => showContent('learning');
+    mainMenu.children[1].onclick = () => showContent('shop');
+    mainMenu.children[2].onclick = () => showContent('marketing');
+
+    function onIncompletePaymentFound(payment) { console.log("Pending payment:", payment); }
 </script>
 </body>
 </html>
+
 
 
 
