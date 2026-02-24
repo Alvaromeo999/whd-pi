@@ -2,96 +2,75 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WHD-Pi App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WHD-Pi</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        :root { --p: #673ab7; --g: #ffa500; }
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
-        .card { background: white; padding: 25px; border-radius: 15px; max-width: 400px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 400px; }
-        .logo { width: 80px; }
-        .btn { background: var(--p); color: white; border: none; padding: 15px; border-radius: 25px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; display: block; }
-        .menu-grid { display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .item { background: #eee; padding: 15px; border-radius: 10px; cursor: pointer; color: var(--p); font-weight: bold; font-size: 12px; }
+        body { font-family: sans-serif; text-align: center; background: #f0f0f0; margin: 0; padding: 20px; }
+        .card { background: white; border-radius: 20px; padding: 20px; max-width: 400px; margin: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .btn-link { display: block; background: #673ab7; color: white; padding: 15px; margin: 10px 0; border-radius: 30px; text-decoration: none; font-weight: bold; cursor: pointer; border: none; width: 100%; font-size: 16px; }
+        .item-link { background: #eee; color: #673ab7; padding: 20px; border-radius: 15px; text-decoration: none; font-weight: bold; font-size: 14px; display: block; border: 1px solid #ddd; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
         .full { grid-column: span 2; }
-        .page { display: none; text-align: left; }
-        #user-sec { display: none; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <img src="logo_whd.png" alt="WHD Logo" class="logo">
-        
-        <div id="home-head">
-            <h1 style="color:var(--p); margin-bottom:0;">WHD-Pi</h1>
-            <p style="font-size:12px; color:#666;">Whole Human Development</p>
-        </div>
+<div class="card">
+    <img src="logo_whd.png" style="width:80px;">
+    <div id="section-home">
+        <h1 style="color:#673ab7;">WHD-Pi</h1>
+        <button class="btn-link" onclick="startLogin()">LOGIN SEKARANG</button>
+    </div>
 
-        <button id="btn-login" class="btn" onclick="handleAuth()">Login ke WHD-Pi</button>
-
-        <div id="user-sec">
-            <p id="msg" style="font-weight: bold;"></p>
-            <div class="menu-grid" id="menu-area" style="display: grid;">
-                <div class="item" onclick="nav('learn')">📚 E-Learning</div>
-                <div class="item" onclick="nav('shop')">🛒 E-Commerce</div>
-                <div class="item full" onclick="nav('mark')">📈 E-Marketing & Community</div>
-            </div>
-        </div>
-
-        <div id="p-learn" class="page">
-            <h3>📚 E-Learning</h3>
-            <div style="background:#000; height:150px; border-radius:10px; color:#fff; display:flex; align-items:center; justify-content:center;">Video Ready</div>
-            <button class="btn" style="background:#666;" onclick="back()">Kembali</button>
-        </div>
-
-        <div id="p-shop" class="page">
-            <h3>🛒 E-Commerce</h3>
-            <p>Modul WHD - 1 Pi</p>
-            <button class="btn" onclick="alert('Bayar Pi...')">Beli</button>
-            <button class="btn" style="background:#666;" onclick="back()">Kembali</button>
-        </div>
-
-        <div id="p-mark" class="page">
-            <h3>📈 Marketing</h3>
-            <p>Networking & Community</p>
-            <button class="btn" style="background:#666;" onclick="back()">Kembali</button>
+    <div id="section-menu" class="hidden">
+        <p id="user-name" style="font-weight:bold;"></p>
+        <div class="grid">
+            <div class="item-link" onclick="showPage('E-Learning')">📚 E-Learning</div>
+            <div class="item-link" onclick="showPage('Shop')">🛒 E-Commerce</div>
+            <div class="item-link full" onclick="showPage('Marketing')">📈 Community</div>
         </div>
     </div>
 
-    <script>
-        // Inisialisasi SDK Langsung
-        window.Pi.init({ version: "2.0", sandbox: true });
+    <div id="section-page" class="hidden">
+        <h2 id="page-title"></h2>
+        <div style="background:#000; color:#fff; height:150px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
+            Content Area
+        </div>
+        <button class="btn-link" style="background:#666;" onclick="goBack()">KEMBALI</button>
+    </div>
+</div>
 
-        async function handleAuth() {
-            try {
-                const scopes = ['username', 'payments'];
-                const auth = await window.Pi.authenticate(scopes, (p) => {});
-                
-                document.getElementById('msg').innerText = "Halo, " + auth.user.username;
-                document.getElementById('btn-login').style.display = 'none';
-                document.getElementById('user-sec').style.display = 'block';
-                console.log("Login Sukses");
-            } catch (e) {
-                alert("Buka di Pi Browser!");
-            }
-        }
+<script>
+    // Inisialisasi SDK tanpa paksaan sandbox
+    window.Pi.init({ version: "2.0", sandbox: true });
 
-        function nav(id) {
-            // Sembunyikan semua
-            document.getElementById('user-sec').style.display = 'none';
-            document.getElementById('home-head').style.display = 'none';
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    async function startLogin() {
+        try {
+            console.log("Memulai Login...");
+            const scopes = ['username', 'payments'];
+            const auth = await window.Pi.authenticate(scopes, (p) => {});
             
-            // Tampilkan yang dipilih
-            document.getElementById('p-' + id).style.display = 'block';
+            document.getElementById('user-name').innerText = "Halo, " + auth.user.username;
+            document.getElementById('section-home').classList.add('hidden');
+            document.getElementById('section-menu').classList.remove('hidden');
+        } catch (err) {
+            alert("Gunakan Pi Browser untuk Login!");
         }
+    }
 
-        function back() {
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById('user-sec').style.display = 'block';
-            document.getElementById('home-head').style.display = 'block';
-        }
-    </script>
+    function showPage(title) {
+        document.getElementById('page-title').innerText = title;
+        document.getElementById('section-menu').classList.add('hidden');
+        document.getElementById('section-page').classList.remove('hidden');
+    }
+
+    function goBack() {
+        document.getElementById('section-page').classList.add('hidden');
+        document.getElementById('section-menu').classList.remove('hidden');
+    }
+</script>
+
 </body>
 </html>
