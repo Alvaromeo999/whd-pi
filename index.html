@@ -11,62 +11,74 @@
             --pi-gold: #ffa500;
         }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px; background-color: #f8f9fa; color: #333; }
-        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; margin: auto; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; margin: auto; min-height: 400px; }
         .logo { width: 100px; margin-bottom: 10px; }
         h1 { color: var(--pi-purple); font-size: 24px; }
         p { color: #666; font-size: 14px; }
         
+        /* Area Konten Dinamis */
+        #dynamic-content { margin-top: 20px; }
+
         .menu-grid { display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .menu-item { background: #eee; padding: 15px; border-radius: 10px; text-decoration: none; color: var(--pi-purple); font-weight: bold; font-size: 12px; transition: 0.3s; }
+        .menu-item { background: #eee; padding: 15px; border-radius: 10px; cursor: pointer; color: var(--pi-purple); font-weight: bold; font-size: 12px; transition: 0.3s; }
         .menu-item:hover { background: var(--pi-purple); color: white; }
         .full-width { grid-column: span 2; }
 
-        button { background-color: var(--pi-purple); color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button { background-color: var(--pi-purple); color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; margin-top: 10px; }
         button:active { transform: scale(0.98); }
         #user-info { margin-top: 20px; padding: 10px; border-top: 1px solid #eee; display: none; }
         .status-badge { background: #e8f5e9; color: #2e7d32; padding: 5px 10px; border-radius: 15px; font-size: 12px; margin-top: 5px; display: inline-block; }
+        
+        .video-box { background:#000; height:180px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; margin: 15px 0; }
+        .back-btn { background: #666; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-       <img src="logo_whd.png" alt="WHD Logo" class="logo">
-        <h1>WHD-Pi Ecosystem</h1>
-        <p>Whole Human Development untuk Masa Depan Pioneers</p>
-        
-        <button id="auth-btn">Login ke WHD-Pi</button>
-        
-        <div id="user-info">
-            <div class="status-badge">Akun Terverifikasi</div>
-            <p id="welcome-msg"></p>
+        <img src="logo_whd.png" alt="WHD Logo" class="logo">
+        <div id="app-header">
+            <h1>WHD-Pi Ecosystem</h1>
+            <p>Whole Human Development untuk Masa Depan Pioneers</p>
+        </div>
+
+        <div id="dynamic-content">
+            <button id="auth-btn">Login ke WHD-Pi</button>
             
-            <div class="menu-grid" id="main-menu">
-            <div class="menu-item" onclick="showContent('learning')">📚 E-Learning</div>
-            <div class="menu-item" onclick="showContent('shop')">🛒 E-Commerce</div>
-            <div class="menu-item full-width" onclick="showContent('marketing')">📈 E-Marketing & Community</div>
+            <div id="user-info">
+                <div class="status-badge">Akun Terverifikasi</div>
+                <p id="welcome-msg"></p>
+                
+                <div class="menu-grid" id="main-menu">
+                    <div class="menu-item" onclick="showContent('learning')">📚 E-Learning</div>
+                    <div class="menu-item" onclick="showContent('shop')">🛒 E-Commerce</div>
+                    <div class="menu-item full-width" onclick="showContent('marketing')">📈 E-Marketing & Community</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
     const Pi = window.Pi;
-    // Gunakan sandbox: true untuk testing di browser biasa
     Pi.init({ version: "2.0", sandbox: true });
 
     const authBtn = document.getElementById('auth-btn');
     const userInfo = document.getElementById('user-info');
     const welcomeMsg = document.getElementById('welcome-msg');
     const mainMenu = document.getElementById('main-menu');
-    const container = document.querySelector('.container');
+    const dynamicContent = document.getElementById('dynamic-content');
+    const appHeader = document.getElementById('app-header');
 
-    // Simpan template utama agar bisa kembali
-    const mainTemplate = container.innerHTML;
+    // Simpan tampilan menu awal
+    const menuHTML = dynamicContent.innerHTML;
 
     // Fungsi Login
     authBtn.addEventListener('click', async () => {
         try {
             const scopes = ['username', 'payments'];
             const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+            
+            // Simpan status login di layar
             welcomeMsg.innerHTML = `Selamat Datang, <strong>${auth.user.username}</strong>!`;
             authBtn.style.display = 'none';
             userInfo.style.display = 'block';
@@ -77,49 +89,64 @@
         }
     });
 
-    // Fungsi Navigasi Konten
+    // Fungsi Navigasi Halaman
     function showContent(type) {
+        appHeader.style.display = "none"; // Sembunyikan header agar fokus ke konten
+        
         let html = "";
         if(type === 'learning') {
             html = `
                 <h2>📚 E-Learning</h2>
                 <p>Modul Pembangunan Karakter WHD</p>
-                <div style="background:#000; height:180px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white;">
-                    <p>Video Player Ready</p>
+                <div class="video-box">
+                    <p>▶ Video Player (Modul Integritas)</p>
                 </div>
-                <button onclick="location.reload()" style="margin-top:15px; background:#666;">Kembali ke Menu</button>
+                <button class="back-btn" onclick="resetToMenu()">Kembali ke Menu</button>
             `;
         } else if(type === 'shop') {
             html = `
                 <h2>🛒 E-Commerce</h2>
-                <div style="border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:10px;">
-                    <p><strong>Modul WHD Level 1</strong></p>
-                    <p style="color:orange;">1.00 Pi</p>
-                    <button onclick="alert('Pi Payment Started...')">Beli Sekarang</button>
+                <div style="border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:10px; text-align: left;">
+                    <p><strong>Modul Karakter WHD Level 1</strong></p>
+                    <p style="color:var(--pi-gold); font-weight:bold;">Harga: 1.00 Pi</p>
+                    <button onclick="alert('Memulai Pembayaran Pi...')">Beli Sekarang</button>
                 </div>
-                <button onclick="location.reload()" style="background:#666;">Kembali</button>
+                <button class="back-btn" onclick="resetToMenu()">Kembali</button>
             `;
         } else if(type === 'marketing') {
             html = `
                 <h2>📈 E-Marketing</h2>
-                <p>Jaringan Global Pioneer WHD</p>
-                <ul style="text-align:left; font-size:13px;">
-                    <li>Strategi Ekonomi Karakter</li>
-                    <li>Community Building</li>
-                </ul>
-                <button onclick="location.reload()" style="background:#666;">Kembali</button>
+                <div style="text-align:left; background:#f9f9f9; padding:15px; border-radius:10px;">
+                    <p><strong>Program Community Building:</strong></p>
+                    <ul style="font-size:13px; padding-left:20px;">
+                        <li>Workshop Strategi Pasar Pi</li>
+                        <li>Global Pioneer Networking</li>
+                        <li>Branding Ekonomi Karakter</li>
+                    </ul>
+                </div>
+                <button class="back-btn" onclick="resetToMenu()">Kembali</button>
             `;
         }
-        container.innerHTML = html;
+        dynamicContent.innerHTML = html;
+    }
+
+    // Fungsi untuk kembali ke menu tanpa refresh halaman (agar login tidak hilang)
+    function resetToMenu() {
+        appHeader.style.display = "block";
+        dynamicContent.innerHTML = `
+            <div id="user-info" style="display:block;">
+                <div class="status-badge">Akun Terverifikasi</div>
+                ${welcomeMsg.outerHTML}
+                <div class="menu-grid" id="main-menu" style="display:grid;">
+                    <div class="menu-item" onclick="showContent('learning')">📚 E-Learning</div>
+                    <div class="menu-item" onclick="showContent('shop')">🛒 E-Commerce</div>
+                    <div class="menu-item full-width" onclick="showContent('marketing')">📈 E-Marketing & Community</div>
+                </div>
+            </div>
+        `;
     }
 
     function onIncompletePaymentFound(payment) { console.log("Pending:", payment); }
-</script>
+    </script>
 </body>
 </html>
-
-
-
-
-
-
