@@ -1,102 +1,88 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WHD-PI — Portal Manajemen</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <style>
-    /* fallback style jika style.css belum kebaca */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #333;
-    }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px 25px;
-      background: #ffffff;
-      border-bottom: 1px solid #ddd;
-      position: sticky;
-      top: 0;
-    }
-    .logo { font-weight: bold; color: #4f46e5; }
-    nav a { margin-left: 20px; text-decoration: none; color: #333; }
-    .container { max-width: 900px; margin: auto; padding: 20px; }
-    .hero {
-      background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .btn-primary {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 10px 20px;
-      background: #4f46e5;
-      color: white;
-      border-radius: 8px;
-      text-decoration: none;
-    }
-    .features .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .card {
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .footer {
-      text-align: center;
-      padding: 20px;
-      margin-top: 40px;
-      background: #fff;
-      border-top: 1px solid #ddd;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHD-Pi App - Whole Human Development</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        :root {
+            --pi-purple: #673ab7;
+            --pi-gold: #ffa500;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px; background-color: #f8f9fa; color: #333; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; margin: auto; }
+        .logo { width: 100px; margin-bottom: 10px; }
+        h1 { color: var(--pi-purple); font-size: 24px; }
+        p { color: #666; font-size: 14px; }
+        
+        .menu-grid { display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .menu-item { background: #eee; padding: 15px; border-radius: 10px; text-decoration: none; color: var(--pi-purple); font-weight: bold; font-size: 12px; transition: 0.3s; }
+        .menu-item:hover { background: var(--pi-purple); color: white; }
+        .full-width { grid-column: span 2; }
+
+        button { background-color: var(--pi-purple); color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:active { transform: scale(0.98); }
+        #user-info { margin-top: 20px; padding: 10px; border-top: 1px solid #eee; display: none; }
+        .status-badge { background: #e8f5e9; color: #2e7d32; padding: 5px 10px; border-radius: 15px; font-size: 12px; margin-top: 5px; display: inline-block; }
+    </style>
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="logo">WHD-PI</div>
-    <nav>
-      <a href="#features">Fitur</a>
-      <a href="#contact">Kontak</a>
-    </nav>
-  </header>
+    <div class="container">
+        <img src="logo WHD.png" alt="WHD Logo" class="logo">
+        <h1>WHD-Pi Ecosystem</h1>
+        <p>Whole Human Development untuk Masa Depan Pioneers</p>
+        
+        <button id="auth-btn">Login ke WHD-Pi</button>
+        
+        <div id="user-info">
+            <div class="status-badge">Akun Terverifikasi</div>
+            <p id="welcome-msg"></p>
+            
+            <div class="menu-grid" id="main-menu">
+                <a href="#" class="menu-item">📚 E-Learning</a>
+                <a href="#" class="menu-item">🛒 E-Commerce</a>
+                <a href="#" class="menu-item full-width">📈 E-Marketing & Community</a>
+            </div>
+        </div>
+    </div>
 
-  <main class="container">
-    <section class="hero">
-      <h1>WHD-PI — Portal Manajemen Proyek</h1>
-      <p>Versi HTML sederhana untuk GitHub Pages.</p>
-      <a href="#features" class="btn-primary">Jelajahi Fitur</a>
-    </section>
+    <script>
+    const Pi = window.Pi;
+    Pi.init({ version: "2.0", sandbox: true });
 
-    <section id="features" class="features">
-      <h2>Fitur Utama</h2>
-      <div class="grid">
-        <div class="card">Manajemen Proyek</div>
-        <div class="card">Laporan Otomatis</div>
-        <div class="card">Integrasi API</div>
-      </div>
-    </section>
+    const authBtn = document.getElementById('auth-btn');
+    const userInfo = document.getElementById('user-info');
+    const welcomeMsg = document.getElementById('welcome-msg');
+    const mainMenu = document.getElementById('main-menu');
 
-    <section id="contact" class="contact">
-      <h2>Kontak</h2>
-      <p>Email: support@whd-pi.local</p>
-    </section>
-  </main>
+    authBtn.addEventListener('click', async () => {
+        try {
+            const scopes = ['username', 'payments'];
+            const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+            welcomeMsg.innerHTML = `Selamat Datang, <strong>${auth.user.username}</strong>!`;
+            authBtn.style.display = 'none';
+            userInfo.style.display = 'block';
+            mainMenu.style.display = 'grid';
+        } catch (err) {
+            alert("Gagal login: " + err.message);
+        }
+    });
 
-  <footer class="footer">© 2025 WHD-PI</footer>
+    // Navigasi Menu Sederhana
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            const menuName = e.target.innerText;
+            alert("Membuka " + menuName + "... (Halaman sedang disiapkan)");
+            // Nantinya di sini kita ganti dengan fungsi memanggil ELearning.js
+        });
+    });
 
-  <script src="assets/js/main.js"></script>
+    function onIncompletePaymentFound(payment) {
+        console.log("Incomplete payment:", payment);
+    };
+</script>
 </body>
 </html>
+
